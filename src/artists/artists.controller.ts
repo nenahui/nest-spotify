@@ -18,6 +18,7 @@ export class ArtistsController {
   constructor(
     @InjectModel(Artists.name) private artistModel: Model<ArtistsDocument>,
   ) {}
+
   @Get()
   async getArtists() {
     return this.artistModel.find();
