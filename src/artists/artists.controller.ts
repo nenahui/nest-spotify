@@ -30,7 +30,7 @@ export class ArtistsController {
     @Body() artistsDto: CreateArtistDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.artistModel.create({
+    return await this.artistModel.create({
       name: artistsDto.name,
       information: artistsDto.information,
       image: file ? file.filename : null,

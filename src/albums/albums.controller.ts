@@ -29,7 +29,7 @@ export class AlbumsController {
     @Body() albumDto: CreateAlbumDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    return this.albumModel.create({
+    return await this.albumModel.create({
       artist: albumDto.artist,
       name: albumDto.name,
       release: albumDto.release,
