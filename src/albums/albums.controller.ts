@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import { randomUUID } from 'crypto';
 import { isValidObjectId, type Model } from 'mongoose';
 import { diskStorage } from 'multer';
@@ -20,6 +21,7 @@ import { Albums, type AlbumDocument } from '../schemas/albums.schema';
 import type { CreateAlbumDto } from './create-album.dto';
 import { existsSync, mkdirSync } from 'fs';
 
+@ApiTags('albums')
 @Controller('albums')
 export class AlbumsController {
   constructor(

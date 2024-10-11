@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags } from '@nestjs/swagger';
 import type { Express } from 'express';
 import { existsSync, mkdirSync } from 'fs';
 import { isValidObjectId, type Model } from 'mongoose';
@@ -20,6 +21,7 @@ import { Artists, type ArtistsDocument } from '../schemas/artists.schema';
 import type { CreateArtistDto } from './create-artist.dto';
 import { randomUUID } from 'crypto';
 
+@ApiTags('artists')
 @Controller('artists')
 export class ArtistsController {
   constructor(
@@ -92,7 +94,7 @@ export class ArtistsController {
 
     return await this.artistModel.create({
       name,
-      information,
+      information: information ? information : null,
       image: file ? `images/artists/${file.filename}` : null,
     });
   }

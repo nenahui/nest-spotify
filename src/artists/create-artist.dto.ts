@@ -1,4 +1,9 @@
+import { ApiProperty } from '@nestjs/swagger';
+
 export class CreateArtistDto {
+  @ApiProperty()
   name: string;
-  information: string;
+
+  @ApiProperty()
+  information: string | null;
 }

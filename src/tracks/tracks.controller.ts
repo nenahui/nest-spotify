@@ -8,10 +8,12 @@ import {
   Post,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ApiTags } from '@nestjs/swagger';
 import { isValidObjectId, type Model } from 'mongoose';
 import { Tracks, type TracksDocument } from '../schemas/tracks.schema';
 import type { CreateTrackDto } from './create-track.dto';
 
+@ApiTags('tracks')
 @Controller('tracks')
 export class TracksController {
   constructor(
@@ -37,7 +39,7 @@ export class TracksController {
     return await this.tracksModel.create({
       album,
       name,
-      duration,
+      duration: duration ? duration : null,
     });
   }
 

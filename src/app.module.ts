@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ArtistsController } from './artists/artists.controller';
 import { Albums, AlbumsSchema } from './schemas/albums.schema';
 import { Artists, ArtistsSchema } from './schemas/artists.schema';
@@ -18,12 +16,6 @@ import { TracksController } from './tracks/tracks.controller';
       { name: Tracks.name, schema: TracksSchema },
     ]),
   ],
-  controllers: [
-    AppController,
-    ArtistsController,
-    AlbumsController,
-    TracksController,
-  ],
-  providers: [AppService],
+  controllers: [ArtistsController, AlbumsController, TracksController],
 })
 export class AppModule {}
