@@ -2,15 +2,18 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { randomUUID } from 'crypto';
-import type { Model } from 'mongoose';
+import { isValidObjectId, type Model } from 'mongoose';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Albums, type AlbumDocument } from '../schemas/albums.schema';
@@ -24,8 +27,31 @@ export class AlbumsController {
   ) {}
 
   @Get()
-  async getAlbums() {
+  async getAlbums(@Query('artist') artist: string) {
+    if (artist) {
+      if (!isValidObjectId(artist)) {
+        throw new BadRequestException('Incorrect ID');
+      }
+
+      return this.albumModel.find({ artist });
+    }
+
     return this.albumModel.find();
+  }
+
+  @Get(':id')
+  async getAlbumById(@Param('id') id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('Incorrect ID');
+    }
+
+    const album = await this.albumModel.findById(id).populate('artist');
+
+    if (!album) {
+      throw new BadRequestException('Album not found');
+    }
+
+    return album;
   }
 
   @Post()
@@ -68,12 +94,13 @@ export class AlbumsController {
   ) {
     const { artist, name, release } = albumDto;
 
-    if (!artist) {
-      throw new BadRequestException('Artist is required');
-    } else if (!name) {
-      throw new BadRequestException('Name is required');
-    } else if (!release) {
-      throw new BadRequestException('Release is required');
+    switch (true) {
+      case !artist:
+        throw new BadRequestException('Artist is required');
+      case !name:
+        throw new BadRequestException('Name is required');
+      case !release:
+        throw new BadRequestException('Release is required');
     }
 
     return await this.albumModel.create({
@@ -82,5 +109,20 @@ export class AlbumsController {
       release,
       image: file ? `images/albums/${file.filename}` : null,
     });
+  }
+
+  @Delete(':id')
+  async deleteAlbum(@Param('id') id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('Incorrect ID');
+    }
+
+    const album = await this.albumModel.findByIdAndDelete(id);
+
+    if (!album) {
+      throw new BadRequestException('Album not found');
+    }
+
+    return 'OK';
   }
 }

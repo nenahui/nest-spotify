@@ -2,7 +2,9 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
   UploadedFile,
   UseInterceptors,
@@ -11,7 +13,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FileInterceptor } from '@nestjs/platform-express';
 import type { Express } from 'express';
 import { existsSync, mkdirSync } from 'fs';
-import type { Model } from 'mongoose';
+import { isValidObjectId, type Model } from 'mongoose';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Artists, type ArtistsDocument } from '../schemas/artists.schema';
@@ -27,6 +29,21 @@ export class ArtistsController {
   @Get()
   async getArtists() {
     return this.artistModel.find();
+  }
+
+  @Get(':id')
+  async getArtistById(@Param('id') id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('Incorrect ID');
+    }
+
+    const artist = await this.artistModel.findById(id);
+
+    if (!artist) {
+      throw new BadRequestException('Artist not found');
+    }
+
+    return artist;
   }
 
   @Post()
@@ -78,5 +95,20 @@ export class ArtistsController {
       information,
       image: file ? `images/artists/${file.filename}` : null,
     });
+  }
+
+  @Delete(':id')
+  async deleteArtist(@Param('id') id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('Incorrect ID');
+    }
+
+    const artist = await this.artistModel.findByIdAndDelete(id);
+
+    if (!artist) {
+      throw new BadRequestException('Artist not found');
+    }
+
+    return 'OK';
   }
 }

@@ -2,11 +2,13 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
   Post,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import type { Model } from 'mongoose';
+import { isValidObjectId, type Model } from 'mongoose';
 import { Tracks, type TracksDocument } from '../schemas/tracks.schema';
 import type { CreateTrackDto } from './create-track.dto';
 
@@ -25,11 +27,11 @@ export class TracksController {
   async createTrack(@Body() tracksDto: CreateTrackDto) {
     const { album, name, duration } = tracksDto;
 
-    if (!album) {
-      throw new BadRequestException('Album is required');
-    }
-    if (!name) {
-      throw new BadRequestException('Name is required');
+    switch (true) {
+      case !album:
+        throw new BadRequestException('Album is required');
+      case !name:
+        throw new BadRequestException('Name is required');
     }
 
     return await this.tracksModel.create({
@@ -37,5 +39,20 @@ export class TracksController {
       name,
       duration,
     });
+  }
+
+  @Delete(':id')
+  async deleteTrack(@Param('id') id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('Incorrect ID');
+    }
+
+    const track = await this.tracksModel.findByIdAndDelete(id);
+
+    if (!track) {
+      throw new BadRequestException('Track not found');
+    }
+
+    return 'OK';
   }
 }
