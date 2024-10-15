@@ -19,6 +19,7 @@ export class UsersController {
       email,
       password,
       displayName,
+      role: 'user',
     });
 
     user.generateToken();

@@ -12,6 +12,11 @@ export interface UserMethods {
 
 export type UserDocument = User & Document & UserMethods;
 
+export enum UserRoles {
+  admin = 'admin',
+  user = 'user',
+}
+
 @Schema()
 export class User {
   @Prop({ required: true, unique: true })
@@ -25,6 +30,9 @@ export class User {
 
   @Prop()
   displayName: string;
+
+  @Prop({ required: true, enum: UserRoles, default: UserRoles.user })
+  role: UserRoles;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
